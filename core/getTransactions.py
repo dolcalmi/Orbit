@@ -10,8 +10,11 @@ def getTransactions(address, processed, database, limit):
     for i in range(pages):
         if pages > 1 and increment != 0:
             trail = '?offset=%i' % increment
+        # print ('address %s\n' % address)
         response = requester(address)
-        matches = findall(r'"addr":".*?"', response)
+        # print ('data after %s\n\n\n' % response)
+        matches = findall(r'"address": ".*?"', response)
+        # print ('matches %s\n\n\n' % matches)
         for match in matches:
             found = match.split('"')[3]
             if found not in database[address]:
