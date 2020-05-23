@@ -90,7 +90,7 @@ for node in database:
             jsoned['nodes'].append({'label': childNode, 'x': x, 'y': y, 'id':'id=' + childNode, 'size': uniqueSize})
         if (node + ':' + childNode or childNode + ':' + node) not in doneEdges:
             doneEdges.extend([(node + ':' + childNode), (childNode + ':' + node)])
-            jsoned['edges'].append({'source':'id=' + node, 'target':'id=' + childNode, 'id':num, "size":uniqueSize/3 if uniqueSize > 3 else uniqueSize})
+            jsoned['edges'].append({'source':'id=' + childNode, 'target':'id=' + node, 'id':num, "size":uniqueSize/3 if uniqueSize > 3 else uniqueSize})
         num += 1
 
 print('%s Total wallets:%i' % (info, len(jsoned['nodes'])))

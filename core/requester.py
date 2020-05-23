@@ -4,6 +4,15 @@ from random import randint
 from time import sleep
 
 known_addresses = [
+#inputs
+"3KGr5cStWHTohMPL9xeHFYzzu98ejoBcbs",
+"3855Ym4LxXvXWpsaCVL8UUn7QZDhC3yikw",
+"3KCFcShQBHudyyTSUznn9W2d1MYcBjvSk5",
+"3FCJdhwLUSAyePxb823wAZCAbimAsAZLi7",
+"39GAs8N1NhHpvmE4hefc39ihvAiFX2kUFm",
+"31wrujVVhf92puvwe4uE1cDgKNc4gXuQRz",
+"3KJzCfav5f9Cw8jpMQWWzM8viYC9Hsbz4h",
+# outputs
 "1BgJMzNobfa2vQU8is6c8pgDatVaVG5fXr",
 "1NcVbCiDYB3A5Fxf5JPftRxTtSzkmjBNem",
 "1Gf4sfkxSDVj93U5gNRwPYwAjYfg1ykxbY",
@@ -52,10 +61,10 @@ def requester(url):
 			if output['address'] == url :
 				is_deposit = True;
 
-		if is_deposit:
-			del tx['outputs']
+		if not is_deposit:
+			del tx['inputs']
 
-		del tx['inputs']
+		del tx['outputs']
 		# print ('tx after %s\n\n\n' % json.dumps(tx))
 
 	# print ('data after %s\n\n\n' % json.dumps(data))
