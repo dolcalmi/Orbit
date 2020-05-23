@@ -2,6 +2,14 @@ import requests
 import json
 from random import randint
 from time import sleep
+import os.path
+
+excluded_addresses = [
+"1Ptv5qNTg6bpoMrH8zKqpiSA62jC3i76Nr",
+"3BTTDAn8HrmS2Lx48EoJy6v35B4jvAUW8p",
+"3MpRwW1Z3QRbmhcQCHQkigUzJV4RApkguT",
+"3FhmrEePt1UJ1dDZLQSVw4ku3ESUp2Ej4U"
+]
 
 known_addresses = [
 #inputs
@@ -50,18 +58,33 @@ known_addresses = [
 def requester(url):
 	if url in known_addresses:
 		return ""
-	sleep(randint(2,5))
-	data = requests.get('https://api.blockchain.info/haskoin-store/btc/address/' + url + '/transactions/full').json()
+
+	p = 'cache/' + url + '.txt'
+	if os.path.exists(p):
+		# print ('path exist\n')
+		file = open(p, mode='r')
+		data = json.loads(file.read())
+		file.close()
+	else:
+		# print ('path does not exist\n')
+		sleep(randint(1, 2))
+		data = requests.get('https://api.blockchain.info/haskoin-store/btc/address/' + url + '/transactions/full').json()
+		file = open(p, mode='a')
+		file.write(json.dumps(data) + "\n")
+		file.close()
+
 	# print ('address %s\n' % url)
 	# print ('data before %s\n\n\n' % json.dumps(data))
 	for tx in data:
 		# print ('tx before %s\n' % json.dumps(tx))
-		is_deposit = False;
-		for output in tx['outputs']:
-			if output['address'] == url :
-				is_deposit = True;
+		is_withdraw = False;
+		for input in tx['inputs']:
+			if input['address'] == url :
+				is_withdraw = True;
 
-		if not is_deposit:
+		if is_withdraw:
+			if len(tx['outputs']) > 2 and not url in excluded_addresses:
+				return "" #"is exchange"
 			del tx['inputs']
 
 		del tx['outputs']
