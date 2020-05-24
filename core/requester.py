@@ -2,6 +2,7 @@ import requests
 import json
 from random import randint
 from time import sleep
+import os.path
 
 known_addresses = [
 "1BgJMzNobfa2vQU8is6c8pgDatVaVG5fXr",
@@ -41,18 +42,34 @@ known_addresses = [
 def requester(url):
 	if url in known_addresses:
 		return ""
-	sleep(randint(2,5))
-	data = requests.get('https://api.blockchain.info/haskoin-store/btc/address/' + url + '/transactions/full').json()
+
+	p = 'cache/outputs/' + url + '.txt'
+	if os.path.exists(p):
+		# print ('path exist\n')
+		file = open(p, mode='r')
+		data = json.loads(file.read())
+		file.close()
+	else:
+		# print ('path does not exist\n')
+		sleep(randint(1, 2))
+		data = requests.get('https://api.blockchain.info/haskoin-store/btc/address/' + url + '/transactions/full').json()
+		file = open(p, mode='a')
+		file.write(json.dumps(data) + "\n")
+		file.close()
+
 	# print ('address %s\n' % url)
 	# print ('data before %s\n\n\n' % json.dumps(data))
 	for tx in data:
 		# print ('tx before %s\n' % json.dumps(tx))
-		is_deposit = False;
-		for output in tx['outputs']:
-			if output['address'] == url :
-				is_deposit = True;
+		is_withdraw = False;
+		for input in tx['inputs']:
+			if input['address'] == url :
+				is_withdraw = True;
 
-		if is_deposit:
+		if is_withdraw and len(tx['outputs']) > 2:
+			return "" #"is exchange"
+
+		if not is_withdraw:
 			del tx['outputs']
 
 		del tx['inputs']
