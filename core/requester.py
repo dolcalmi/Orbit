@@ -59,7 +59,7 @@ def requester(url):
 	if url in known_addresses:
 		return ""
 
-	p = 'cache/' + url + '.txt'
+	p = 'cache/inputs/' + url + '.txt'
 	if os.path.exists(p):
 		# print ('path exist\n')
 		file = open(p, mode='r')
